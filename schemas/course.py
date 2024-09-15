@@ -12,8 +12,8 @@ class CourseSchema(BaseModel):
     content: str = "content"
     imageURL: str = "/src/assets/courses/docker.png"
     category: str = "DevOps"
-    filename: str = "ddsds"
-    filepath: str = "dsds"
+    #filename: str = "ddsds"
+    #filepath: str = "dsds"
     image_data: str = "teste image"
     
 
@@ -60,8 +60,8 @@ def apresenta_courses(courses: List[Course]):
             "content": course.content,
             "imageURL": course.imageURL,
             "category": course.category,
-            "filename": course.filename,
-            "filepath": course.filepath,
+            #"filename": course.filename,
+            #"filepath": course.filepath,
             #"image_data": course.image_data,
         })
     
