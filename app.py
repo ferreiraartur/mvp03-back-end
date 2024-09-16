@@ -32,6 +32,8 @@ def home():
     """
     return redirect('/openapi')
 
+@app.put('/category')
+
 
 @app.post('/course', tags=[course_tag],
           responses={"200": CourseSchema, "409": ErrorSchema, "400": ErrorSchema})

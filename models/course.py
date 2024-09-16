@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, DateTime, Float, UniqueConstraint
+from sqlalchemy import Column, String, Integer, DateTime, Float, UniqueConstraint, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from typing import Union
@@ -14,10 +14,11 @@ class Course(Base):
     price = Column(Float)
     content = Column(String(200))
     imageURL = Column(String(200))
-    category = Column(String(200))
+    #category = Column(String(200))
     filename = Column(String(120), nullable=False)
     filepath = Column(String(120), nullable=False)
     image_data = Column(LargeBinary, nullable=False)
+    #category_id = Column(Integer, ForeignKey('category_catalog.pk_category'), nullable=False)
 
     data_insercao = Column(DateTime, default=datetime.now())
 

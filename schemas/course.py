@@ -12,8 +12,6 @@ class CourseSchema(BaseModel):
     content: str = "content"
     imageURL: str = "/src/assets/courses/docker.png"
     category: str = "DevOps"
-    #filename: str = "ddsds"
-    #filepath: str = "dsds"
     image_data: str = "teste image"
     
 
