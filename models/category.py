@@ -13,7 +13,7 @@ class Category(Base):
     name = Column(String(200))   
     description = Column(String(200))
     image_category = Column(LargeBinary, nullable=False)
-    #courses = relationship('Course', backref='category', lazy=True)
+    
 
     def __init__(self, name, description, image_category):
      """

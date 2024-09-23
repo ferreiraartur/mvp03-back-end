@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Base64Bytes
 from typing import Optional, List
 from models.course import Course
 
@@ -11,9 +11,9 @@ class CourseSchema(BaseModel):
     price: str = "29.99"
     content: str = "content"
     imageURL: str = "/src/assets/courses/docker.png"
-    category: str = "DevOps"
-    image_data: str = "teste image"
-    
+    #category: str = "DevOps"
+    image_data: str = "image"
+    file: Base64Bytes = "Image"
 
 
 class CourseViewSchema(BaseModel):
@@ -23,7 +23,7 @@ class CourseViewSchema(BaseModel):
     price: str = "29.99"
     content: str = "content"
     imageURL: str = "/src/assets/courses/docker.png"
-    category: str = "DevOps"
+    #category: str = "DevOps"
 
 
 class FindCourseBySchema(BaseModel):
@@ -57,7 +57,7 @@ def apresenta_courses(courses: List[Course]):
             "price": course.price,
             "content": course.content,
             "imageURL": course.imageURL,
-            "category": course.category,
+            #"category": course.category,
             #"filename": course.filename,
             #"filepath": course.filepath,
             #"image_data": course.image_data,
@@ -91,7 +91,7 @@ def apresenta_course(course: Course):
         "price": course.price,
         "content": course.content,
         "imageURL": course.imageURL,
-        "category": course.category
+        #"category": course.category
     }
 
 

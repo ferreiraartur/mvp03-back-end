@@ -6,6 +6,7 @@ import os
 # importando os elementos definidos no modelo
 from models.base import Base
 from models.course import Course
+from models.category import Category
 
 
 db_path = 'database/'

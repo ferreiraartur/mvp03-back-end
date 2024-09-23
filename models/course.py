@@ -14,15 +14,14 @@ class Course(Base):
     price = Column(Float)
     content = Column(String(200))
     imageURL = Column(String(200))
-    #category = Column(String(200))
     filename = Column(String(120), nullable=False)
     filepath = Column(String(120), nullable=False)
     image_data = Column(LargeBinary, nullable=False)
-    #category_id = Column(Integer, ForeignKey('category_catalog.pk_category'), nullable=False)
+    
 
     data_insercao = Column(DateTime, default=datetime.now())
 
-    def __init__ (self,  title, price, content, imageURL, category, filename, filepath, image_data,
+    def __init__ (self,  title, price, content, imageURL, filename, filepath, image_data,
                   data_insercao:Union[DateTime, None] = None):
         """
             Cria um Curso
@@ -41,7 +40,6 @@ class Course(Base):
         self.price = price
         self.content = content
         self.imageURL = imageURL
-        self.category = category
         self.filename = filename
         self.filepath = filepath
         self.image_data = image_data
@@ -60,7 +58,6 @@ class Course(Base):
             "price": self.price,
             "content": self.content,
             "imageURL": self.imageURL,
-            "category": self.category,
             "filename": self.filename,
             "filepath": self.filepath,
             "image_data": self.image_data,

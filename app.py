@@ -2,7 +2,7 @@ from flask_openapi3 import OpenAPI, Info, Tag
 from flask import Flask,flash, request, redirect, url_for, render_template, send_file
 from urllib.parse import unquote
 from sqlalchemy.exc import IntegrityError
-from models import Session, Course
+from models import Session, Course, Category
 from logger import logger
 from schemas import *
 from flask_cors import CORS
@@ -20,6 +20,7 @@ CORS(app)
 # definindo tags
 home_tag = Tag(name="Documentação", description="Seleção de documentação: Swagger, Redoc ou RapiDoc")
 course_tag = Tag(name="Curso", description="Adição, visualização e remoção de cursos à base")
+category_tag = Tag(name="Category", description="Adição, visualização e remoção de categorias à base")
 
 
 def allowed_file(filename):
@@ -32,7 +33,15 @@ def home():
     """
     return redirect('/openapi')
 
-@app.put('/category')
+#@app.put('/course', tags=[course_tag],
+#         responses={"200": CourseSchema, "409": ErrorSchema, "400": ErrorSchema})
+#def update_course(form: CourseSchema):
+#     """ Atualiza um Curso à base de dados
+#     """
+#     print (form)
+#     logger.info(f"Atualizando o curso de nome:")
+#     try:
+          
 
 
 @app.post('/course', tags=[course_tag],
@@ -81,7 +90,6 @@ def add_course(form: CourseSchema):
                     price=form.price,
                     content=form.content,
                     imageURL=form.imageURL,
-                    category=form.category,
                     filename=filename,
                     filepath=filepath,
                     image_data=image_data        
@@ -218,13 +226,102 @@ def find_course(query: FindCourseBySchema):
            logger.info(f"%d courses encontrados" % len(courses))
            # retorna a representação de course
            return apresenta_courses(courses), 200
-      
 
+
+@app.put('/category', tags=[category_tag],
+          responses={"200": CategorySchema, "409": ErrorSchema, "400": ErrorSchema})
+def add_category(form: CategorySchema):
+    """Adiciona uma nova categoria à base de dados
+
+    Retorna uma representação das categorias associados.
+    """
+    
+    logger.debug(f"Adicionando categoria")
+    
+    try:
+        if 'file' not in request.files:
+             flash ('no file part')
+             return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+             flash ('No selected file')
+             return redirect(request.url)
+        if file and allowed_file(file.filename):
+             image_category = file.read()    
+             print ("teste image",image_category)
+        category = Category(
+        name=form.name,
+        description=form.description,
+        image_category=image_category
+        )
+        # criando conexão com a base
+        session = Session()
+        # adicionando categoria
+        session.add(category)
+        # efetivando o camando de adição de novo item na tabela
+        session.commit()
+        logger.debug(f"Adicionado categoria ")
+        return apresenta_categoria(category), 200
+
+    except IntegrityError as e:
+        # como a duplicidade do nome é a provável razão do IntegrityError
+        error_msg = "Category de mesmo nome já salvo na base :/"
+        logger.warning(f"Erro ao adicionar categoria , {error_msg}")
+        return {"mesage": error_msg}, 409
+
+    except Exception as e:
+        # caso um erro fora do previsto
+        error_msg = "Não foi possível salvar novo item :/"
+        logger.warning(f"Erro ao adicionar categoria ', {error_msg}")
+        return {"mesage": error_msg}, 400
+    
+
+#@app.get('/category', tags=[category_tag],
+#         responses={"200": CategoryViewSchema, "404": ErrorSchema})
+#def get_category(query: FindCategoryByIdSchema):
+#     """Faz a busca por uma categoria a partir do id do categoria
+#        Retorna uma represetação das categorias.
+#     """
+#     category_id = query.id
+#     logger.info(f"Coletando dados sobre categoria #{category_id}")
+#     # criando conexão com a base
+#     session = Session()
+#     # fazendo a busca
+#     category = session.query(Category).filter(Category.id == category_id).first()
      
 
+#     if not category:
+#          # se a categoria não foi encontrado
+#          error_msg = "Categoria não encontrado na base :/"
+#          logger.warning(f"Erro ao buscar categoria: %s" % category)
+#          # retora a representação de categoria
+#          return {"mesage": error_msg}, 404
+#     else:
+#          logger.info("Category encontrado: %s" % category)
+#          # retorna a representação de course
+#          return apresenta_categoria(category), 200
+     
 
+@app.get('/categories', tags=[category_tag],
+         responses={"200": CategoriesListSchema, "404": ErrorSchema})
+def get_categories():
+     """Faz a busca por todos as categorias cadastrados
 
+     Retorna uma representação da listagem de categorias.
+     """
+     logger.info(f"Listing categorias ")
+     # criando conexão com a base
+     session = Session()
+     # fazendo a busca
+     categories = session.query(Category).all()
 
+     if not categories:
+          # se não há courses cadastrados
+          return {"categories": []}, 200
+     else:
+        logger.info(f"%d categorias econtrados" % len(categories))
+        # retorna a representação de categoria
+        return apresenta_categoria(categories), 200
 
 
 
