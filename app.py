@@ -363,8 +363,6 @@ def add_promotion(form: PromotionSchema):
     logger.debug(f"Adicionando promoção de nome: '{promotion.name}'")
     try:
         
-        p = session.get
-
         # criando conexão com a base
         session = Session()
         # adicionando pagamento
@@ -424,6 +422,32 @@ def update_promotion(query: FindPromotionByIdSchema, form: PromotionSchema):
         error_msg = "Não foi possível salvar novo item :/"
         logger.warning(f"Erro ao adicionar promotion '{promotion.name}', {error_msg}")
         return {"mesage": error_msg}, 400
+
+
+@app.delete('/promotion', tags=[promotion_tag],
+            responses={"200": PromotionDelSchema, "404": ErrorSchema})
+def del_promotion(query: FindPromotionByIdSchema):
+     """Deleta uma promoção a partir do id informado
+     
+        Retorna uma mensagem de confirmação da remoção.
+     """
+     promotion_id = query.id
+     logger.info(f"Deletando dados sobre course #course_title")
+     # criando conexão com a base
+     session = Session()
+     # fazendo a remoção
+     count = session.query(Promotion).filter(Promotion.id == promotion_id).delete()
+     session.commit()
+
+     if count:
+          # retorna a representaçã da mensagem de confirmação
+          logger.info(f"Deletado promotion #{promotion_id}")
+          return {"mesage": "Promotion removido", "id": promotion_id}
+     else:
+          # se o promotion não foi encontrado
+          error_msg = "Promotion não encontrado na base :/"
+          logger.warning(f"Erro ao deletar course #'{promotion_id}', {error_msg}")
+          return {"mesage": error_msg}, 404
      
 
 

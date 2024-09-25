@@ -31,6 +31,14 @@ class PromotionListSchema(BaseModel):
     promotions:List[PromotionSchema]
 
 
+class PromotionDelSchema(BaseModel):
+    """ Define como deve ser a estrutura do dado retornado após uma requisição
+        de remoção.
+    """
+    mesage: str
+    id: int
+
+
 def apresenta_promotions(promotions: List[Promotion]):
     """ Retorna uma representação da promotion seguindo o schema definido em ListagemPromotionSchema.
     """
