@@ -2,7 +2,7 @@ from flask_openapi3 import OpenAPI, Info, Tag
 from flask import Flask,flash, request, redirect, url_for, render_template, send_file
 from urllib.parse import unquote
 from sqlalchemy.exc import IntegrityError
-from models import Session, Course, Category
+from models import Session, Course, Category, Promotion
 from logger import logger
 from schemas import *
 from flask_cors import CORS
@@ -21,6 +21,7 @@ CORS(app)
 home_tag = Tag(name="Documentação", description="Seleção de documentação: Swagger, Redoc ou RapiDoc")
 course_tag = Tag(name="Curso", description="Adição, visualização e remoção de cursos à base")
 category_tag = Tag(name="Category", description="Adição, visualização e remoção de categorias à base")
+promotion_tag = Tag(name="Promotion", description="Adição, visualização e remoção de promoções à base")
 
 
 def allowed_file(filename):
@@ -325,7 +326,105 @@ def get_categories():
 
 
 
+##################### Promotion ######################################
 
+@app.get('/promotions', tags=[category_tag],
+         responses={"200": PromotionListSchema, "404": ErrorSchema})
+def get_promotions():
+     """Faz a busca por todos promoções cadastrados
+
+     Retorna uma representação da listagem de promoções.
+     """
+     logger.info(f"Listing promotions ")
+     # criando conexão com a base
+     session = Session()
+     # fazendo a busca
+     promotions = session.query(Promotion).all()
+
+     if not promotions:
+          # se não há courses cadastrados
+          return {"promotions": []}, 200
+     else:
+        logger.info(f"%d promotions econtrados" % len(promotions))
+        # retorna a representação de promotion
+        return apresenta_promotions(promotions), 200
+
+
+@app.post('/promotion', tags=[promotion_tag],
+          responses={"200": PromotionSchema, "409": ErrorSchema, "400": ErrorSchema})
+def add_promotion(form: PromotionSchema):
+    """Adiciona uma nova promoção à base de dados
+
+    Retorna uma representação das promoções associadas.
+    """
+    promotion = Promotion(
+        name=form.name,
+        discount=form.discount)
+    logger.debug(f"Adicionando promoção de nome: '{promotion.name}'")
+    try:
+        
+        p = session.get
+
+        # criando conexão com a base
+        session = Session()
+        # adicionando pagamento
+        session.add(promotion)
+        # efetivando o camando de adição de novo item na tabela
+        session.commit()
+        logger.debug(f"Adicionado promotion de nome: '{promotion.name}'")
+        return apresenta_promotion(promotion), 200
+
+    except IntegrityError as e:
+        # como a duplicidade do nome é a provável razão do IntegrityError
+        error_msg = "Promotion de mesmo nome já salvo na base :/"
+        logger.warning(f"Erro ao adicionar promotion '{promotion.name}', {error_msg}")
+        return {"mesage": error_msg}, 409
+
+    except Exception as e:
+        # caso um erro fora do previsto
+        error_msg = "Não foi possível salvar novo item :/"
+        logger.warning(f"Erro ao adicionar promotion '{promotion.name}', {error_msg}")
+        return {"mesage": error_msg}, 400
+    
+
+@app.put('/promotion', tags=[promotion_tag],
+          responses={"200": PromotionSchema, "409": ErrorSchema, "400": ErrorSchema})
+def update_promotion(query: FindPromotionByIdSchema, form: PromotionSchema):
+    """Atualiza a promoção
+
+    Retorna uma representação das promoções associadas.
+    """    
+
+    try:
+        promotion_id = query.id
+        logger.debug(f"Coletando dados sobre promotion#{promotion_id}")
+
+        # criando conexão com a base
+        session = Session()
+
+        promotion = session.query(Promotion).filter(Promotion.id == promotion_id).first()
+        promotion.name = form.name 
+        promotion.discount = form.discount
+
+        # adicionando pagamento
+        #session.add(promotion)
+        # efetivando o camando de adição de novo item na tabela
+        session.commit()
+        logger.debug(f"Adicionado promotion de nome: '{promotion.name}'")
+        return apresenta_promotion(promotion), 200
+
+    except IntegrityError as e:
+        # como a duplicidade do nome é a provável razão do IntegrityError
+        error_msg = "Promotion de mesmo nome já salvo na base :/"
+        logger.warning(f"Erro ao adicionar promotion '{promotion.name}', {error_msg}")
+        return {"mesage": error_msg}, 409
+
+    except Exception as e:
+        # caso um erro fora do previsto
+        error_msg = "Não foi possível salvar novo item :/"
+        logger.warning(f"Erro ao adicionar promotion '{promotion.name}', {error_msg}")
+        return {"mesage": error_msg}, 400
+     
 
 
 

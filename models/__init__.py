@@ -7,6 +7,7 @@ import os
 from models.base import Base
 from models.course import Course
 from models.category import Category
+from models.promotion import Promotion
 
 
 db_path = 'database/'
