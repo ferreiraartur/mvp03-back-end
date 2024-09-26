@@ -367,114 +367,111 @@ def add_cupom(form: CupomSchema):
         # criando conexão com a base
         session = Session()
         # adicionando pagamento
-        session.add(promotion)
+        session.add(cupom)
         # efetivando o camando de adição de novo item na tabela
         session.commit()
-        logger.debug(f"Adicionado promotion de nome: '{promotion.name}'")
-        return apresenta_promotion(promotion), 200
+        logger.debug(f"Adicionado promotion de nome: '{cupom.name}'")
+        return apresenta_promotion(cupom), 200
 
     except IntegrityError as e:
         # como a duplicidade do nome é a provável razão do IntegrityError
         error_msg = "Promotion de mesmo nome já salvo na base :/"
-        logger.warning(f"Erro ao adicionar promotion '{promotion.name}', {error_msg}")
+        logger.warning(f"Erro ao adicionar promotion '{cupom.name}', {error_msg}")
         return {"mesage": error_msg}, 409
 
     except Exception as e:
         # caso um erro fora do previsto
         error_msg = "Não foi possível salvar novo item :/"
-        logger.warning(f"Erro ao adicionar promotion '{promotion.name}', {error_msg}")
+        logger.warning(f"Erro ao adicionar promotion '{cupom.name}', {error_msg}")
         return {"mesage": error_msg}, 400
     
 
-@app.put('/promotion', tags=[promotion_tag],
-          responses={"200": PromotionSchema, "409": ErrorSchema, "400": ErrorSchema})
-def update_promotion(query: FindPromotionByIdSchema, form: PromotionSchema):
-    """Atualiza a promoção
+@app.put('/promotion', tags=[cupom_tag],
+          responses={"200": CupomSchema, "409": ErrorSchema, "400": ErrorSchema})
+def update_promotion(query: FindCupomByIdSchema, form: CupomSchema):
+    """Atualiza a cupom
 
-    Retorna uma representação das promoções associadas.
+    Retorna uma representação das cupons associadas.
     """    
 
     try:
-        promotion_id = query.id
-        logger.debug(f"Coletando dados sobre promotion#{promotion_id}")
+        cupom_id = query.id
+        logger.debug(f"Coletando dados sobre cupom#{cupom_id}")
 
         # criando conexão com a base
         session = Session()
 
-        promotion = session.query(Promotion).filter(Promotion.id == promotion_id).first()
-        promotion.name = form.name 
-        promotion.discount = form.discount
+        cupom = session.query(Cupom).filter(Cupom.id == cupom_id).first()
+        cupom.name = form.name 
+        cupom.discount = form.discount
 
-        # adicionando pagamento
-        #session.add(promotion)
-        # efetivando o camando de adição de novo item na tabela
         session.commit()
-        logger.debug(f"Adicionado promotion de nome: '{promotion.name}'")
-        return apresenta_promotion(promotion), 200
+        logger.debug(f"Adicionado promotion de nome: '{cupom.name}'")
+        return apresenta_promotion(cupom), 200
 
     except IntegrityError as e:
         # como a duplicidade do nome é a provável razão do IntegrityError
-        error_msg = "Promotion de mesmo nome já salvo na base :/"
-        logger.warning(f"Erro ao adicionar promotion '{promotion.name}', {error_msg}")
+        error_msg = "Cupom de mesmo nome já salvo na base :/"
+        logger.warning(f"Erro ao adicionar cupom '{cupom.name}', {error_msg}")
         return {"mesage": error_msg}, 409
 
     except Exception as e:
         # caso um erro fora do previsto
         error_msg = "Não foi possível salvar novo item :/"
-        logger.warning(f"Erro ao adicionar promotion '{promotion.name}', {error_msg}")
+        logger.warning(f"Erro ao adicionar cupom '{cupom.name}', {error_msg}")
         return {"mesage": error_msg}, 400
 
 
-@app.delete('/promotion', tags=[promotion_tag],
-            responses={"200": PromotionDelSchema, "404": ErrorSchema})
-def del_promotion(query: FindPromotionByIdSchema):
-     """Deleta uma promoção a partir do id informado
+@app.delete('/cupom', tags=[cupom_tag],
+            responses={"200": CupomDelSchema, "404": ErrorSchema})
+def del_cupom(query: FindCupomByIdSchema):
+     """Deleta uma cupom a partir do id informado
      
         Retorna uma mensagem de confirmação da remoção.
      """
-     promotion_id = query.id
-     logger.info(f"Deletando dados sobre course #course_title")
+     cupom_id = query.id
+     logger.info(f"Deletando dados sobre cupom #cupom_title")
      # criando conexão com a base
      session = Session()
      # fazendo a remoção
-     count = session.query(Promotion).filter(Promotion.id == promotion_id).delete()
+     count = session.query(Cupom).filter(Cupom.id == cupom_id).delete()
      session.commit()
 
      if count:
           # retorna a representaçã da mensagem de confirmação
-          logger.info(f"Deletado promotion #{promotion_id}")
-          return {"mesage": "Promotion removido", "id": promotion_id}
+          logger.info(f"Deletado cupom #{ cupom_id}")
+          return {"mesage": "Cupom removido", "id": cupom_id}
      else:
           # se o promotion não foi encontrado
-          error_msg = "Promotion não encontrado na base :/"
-          logger.warning(f"Erro ao deletar course #'{promotion_id}', {error_msg}")
+          error_msg = "Cupom não encontrado na base :/"
+          logger.warning(f"Erro ao deletar cupom #'{cupom_id}', {error_msg}")
           return {"mesage": error_msg}, 404
      
 
-@app.get('/promotion', tags=[promotion_tag],
-         responses={"200": PromotionSchema, "404": ErrorSchema})
-def get_promotion(query: FindPromotionBySchema):
+@app.get('/cupom', tags=[cupom_tag],
+         responses={"200": CupomSchema, "404": ErrorSchema})
+def get_cupom(query: FindCupomBySchema):
     """Faz a busca por um cupom a partir do nome do cupom
 
     Retorna uma representação dos cupons.
     """
-    promotion_name = unquote(unquote(query.code))
-    print(promotion_name)
-    logger.debug(f"Coletando dados sobre promotion #{promotion_name}")
+    cupom_name = unquote(unquote(query.code))
+    print(cupom_name)
+    logger.debug(f"Coletando dados sobre cupom #{cupom_name}")
     # criando conexão com a base
     session = Session()
     # fazendo a busca
-    promotion = session.query(Promotion).filter(Promotion.name == promotion_name).first()
+    cupom = session.query(Cupom).filter(Cupom.name == cupom_name).first()
 
-    if not promotion:
+    if not cupom:
         # se a promotion não foi encontrado
-        error_msg = "Promotion não encontrado na base :/"
-        logger.warning(f"Erro ao buscar promotion '{promotion_name}', {error_msg}")
+        error_msg = "Cupom não encontrado na base :/"
+        logger.warning(f"Erro ao buscar cupom '{cupom_name}', {error_msg}")
         return {"mesage": error_msg}, 404
     else:
-        logger.debug(f"Promotion econtrado: '{promotion.name}'")
+        logger.debug(f"Cupom econtrado: '{cupom.name}'")
         # retorna a representação da promoção
-        return apresenta_promotion(promotion), 200
+        return apresenta_cupom(cupom), 200
      
 
 

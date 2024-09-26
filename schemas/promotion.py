@@ -41,7 +41,7 @@ class CupomDelSchema(BaseModel):
     id: int
 
 
-def apresenta_promotions(cupons: List[Cupom]):
+def apresenta_cupons(cupons: List[Cupom]):
     """ Retorna uma representação do cupom seguindo o schema definido em ListagemCupomSchema.
     """
     result = []
@@ -56,7 +56,7 @@ def apresenta_promotions(cupons: List[Cupom]):
     return {"cupons": result}
 
 
-def apresenta_promotion(cupom: Cupom):
+def apresenta_cupom(cupom: Cupom):
     """ Retorna uma representação da promotion seguindo o schema definido em
         PromotionViewSchema.
     """
