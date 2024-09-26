@@ -21,7 +21,7 @@ CORS(app)
 home_tag = Tag(name="Documentação", description="Seleção de documentação: Swagger, Redoc ou RapiDoc")
 course_tag = Tag(name="Curso", description="Adição, visualização e remoção de cursos à base")
 category_tag = Tag(name="Category", description="Adição, visualização e remoção de categorias à base")
-promotion_tag = Tag(name="Promotion", description="Adição, visualização e remoção de promoções à base")
+cupom_tag = Tag(name="Cupom", description="Adição, visualização e remoção de cupons à base")
 
 
 def allowed_file(filename):
@@ -328,39 +328,40 @@ def get_categories():
 
 ##################### Promotion ######################################
 
-@app.get('/promotions', tags=[category_tag],
-         responses={"200": PromotionListSchema, "404": ErrorSchema})
-def get_promotions():
-     """Faz a busca por todos promoções cadastrados
+@app.get('/cupons', tags=[category_tag],
+         responses={"200": CupomListSchema, "404": ErrorSchema})
+def get_cupons():
+     """Faz a busca por todos os cupons cadastrados
 
-     Retorna uma representação da listagem de promoções.
+     Retorna uma representação da listagem de cupons.
      """
-     logger.info(f"Listing promotions ")
+     logger.info(f"Listing cupons ")
      # criando conexão com a base
      session = Session()
      # fazendo a busca
-     promotions = session.query(Promotion).all()
+     cupons = session.query(Cupom).all()
 
-     if not promotions:
+     if not cupons:
           # se não há courses cadastrados
-          return {"promotions": []}, 200
+          return {"cupons": []}, 200
      else:
-        logger.info(f"%d promotions econtrados" % len(promotions))
+        logger.info(f"%d cupons econtrados" % len(cupons))
         # retorna a representação de promotion
-        return apresenta_promotions(promotions), 200
+        return apresenta_cupons(cupons), 200
 
 
-@app.post('/promotion', tags=[promotion_tag],
-          responses={"200": PromotionSchema, "409": ErrorSchema, "400": ErrorSchema})
-def add_promotion(form: PromotionSchema):
-    """Adiciona uma nova promoção à base de dados
+@app.post('/cupom', tags=[cupom_tag],
+          responses={"200": CupomSchema, "409": ErrorSchema, "400": ErrorSchema})
+def add_cupom(form: CupomSchema):
+    """Adiciona um novo cupom à base de dados
 
-    Retorna uma representação das promoções associadas.
+    Retorna uma representação das cupons associadas.
     """
-    promotion = Promotion(
+    cupom = Cupom(
         name=form.name,
-        discount=form.discount)
-    logger.debug(f"Adicionando promoção de nome: '{promotion.name}'")
+        discount=form.discount,
+        valid=form.valid)
+    logger.debug(f"Adicionando cupom de nome: '{cupom.name}'")
     try:
         
         # criando conexão com a base
@@ -448,6 +449,32 @@ def del_promotion(query: FindPromotionByIdSchema):
           error_msg = "Promotion não encontrado na base :/"
           logger.warning(f"Erro ao deletar course #'{promotion_id}', {error_msg}")
           return {"mesage": error_msg}, 404
+     
+
+@app.get('/promotion', tags=[promotion_tag],
+         responses={"200": PromotionSchema, "404": ErrorSchema})
+def get_promotion(query: FindPromotionBySchema):
+    """Faz a busca por um cupom a partir do nome do cupom
+
+    Retorna uma representação dos cupons.
+    """
+    promotion_name = unquote(unquote(query.code))
+    print(promotion_name)
+    logger.debug(f"Coletando dados sobre promotion #{promotion_name}")
+    # criando conexão com a base
+    session = Session()
+    # fazendo a busca
+    promotion = session.query(Promotion).filter(Promotion.name == promotion_name).first()
+
+    if not promotion:
+        # se a promotion não foi encontrado
+        error_msg = "Promotion não encontrado na base :/"
+        logger.warning(f"Erro ao buscar promotion '{promotion_name}', {error_msg}")
+        return {"mesage": error_msg}, 404
+    else:
+        logger.debug(f"Promotion econtrado: '{promotion.name}'")
+        # retorna a representação da promoção
+        return apresenta_promotion(promotion), 200
      
 
 

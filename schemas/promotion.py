@@ -1,37 +1,39 @@
 from pydantic import BaseModel
 from typing import Optional, List
-from models.promotion import Promotion
+from models.cupom import Cupom
 
 
-class PromotionSchema(BaseModel):
+class CupomSchema(BaseModel):
     """ Define como um novo course vai ser inserido e representado
     """
     
     name: str = "Natal10"
     discount: int = "10"
+    valid: bool = "true"
+    
 
 
-class FindPromotionBySchema(BaseModel):
+class FindCupomBySchema(BaseModel):
     """ Define como deve ser a estrutura que representa a busca. Que será
-        feita apenas com base no nome da Promoção.
+        feita apenas com base no nome do Cupom.
     """
-    termo: str = "Natal10"
+    code: str = "Natal10"
 
 
-class FindPromotionByIdSchema(BaseModel):
+class FindCupomByIdSchema(BaseModel):
     """ Define como deve ser a estrutura que representa a busca. Que será
-        feita apen com base no ID da Promoção.
+        feita apen com base no ID do Cupom.
     """
     id: int = "1"
 
 
-class PromotionListSchema(BaseModel):
-    """ Define como uma listagem de courses será retornada.
+class CupomListSchema(BaseModel):
+    """ Define como uma listagem de cupons será retornada.
     """
-    promotions:List[PromotionSchema]
+    promotions:List[CupomSchema]
 
 
-class PromotionDelSchema(BaseModel):
+class CupomDelSchema(BaseModel):
     """ Define como deve ser a estrutura do dado retornado após uma requisição
         de remoção.
     """
@@ -39,27 +41,29 @@ class PromotionDelSchema(BaseModel):
     id: int
 
 
-def apresenta_promotions(promotions: List[Promotion]):
-    """ Retorna uma representação da promotion seguindo o schema definido em ListagemPromotionSchema.
+def apresenta_promotions(cupons: List[Cupom]):
+    """ Retorna uma representação do cupom seguindo o schema definido em ListagemCupomSchema.
     """
     result = []
-    for promotion in promotions:
+    for cupom in cupons:
         result.append({
-            "id": promotion.id,
-            "name": promotion.name,
-            "discount": promotion.discount,
+            "id": cupom.id,
+            "name": cupom.name,
+            "discount": cupom.discount,
+            "valid": cupom.valid,
         })
     
-    return {"promotions": result}
+    return {"cupons": result}
 
 
-def apresenta_promotion(promotion: Promotion):
+def apresenta_promotion(cupom: Cupom):
     """ Retorna uma representação da promotion seguindo o schema definido em
         PromotionViewSchema.
     """
     return {
-        "id": promotion.id,
-        "name": promotion.name,
-        "discount": promotion.discount,
+        "id": cupom.id,
+        "name": cupom.name,
+        "discount": cupom.discount,
+        "valid": cupom.valid,
         
     }
