@@ -2,7 +2,7 @@ from flask_openapi3 import OpenAPI, Info, Tag
 from flask import Flask,flash, request, redirect, url_for, render_template, send_file
 from urllib.parse import unquote
 from sqlalchemy.exc import IntegrityError
-from models import Session, Course, Category, Promotion
+from models import Session, Course, Category, Cupom
 from logger import logger
 from schemas import *
 from flask_cors import CORS
