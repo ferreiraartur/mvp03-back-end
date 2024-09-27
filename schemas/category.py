@@ -48,8 +48,7 @@ def apresenta_categorias(categories: List[Category]):
         result.append({
             "id": category.id,
             "name": category.name,
-            "description": category.description,
-            "image_category": category.image_category,
+            "description": category.description
         })
     
     return {"categories": result}

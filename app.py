@@ -34,16 +34,6 @@ def home():
     """
     return redirect('/openapi')
 
-#@app.put('/course', tags=[course_tag],
-#         responses={"200": CourseSchema, "409": ErrorSchema, "400": ErrorSchema})
-#def update_course(form: CourseSchema):
-#     """ Atualiza um Curso à base de dados
-#     """
-#     print (form)
-#     logger.info(f"Atualizando o curso de nome:")
-#     try:
-          
-
 
 @app.post('/course', tags=[course_tag],
           responses={"200": CourseSchema, "409": ErrorSchema, "400": ErrorSchema})
@@ -69,17 +59,17 @@ def add_course(form: CourseSchema):
                flash('No selected file')
                return redirect(request.url)
           if file and allowed_file(file.filename):
-               print('Testando')
-               print (file.filename)
+               #print('Testando')
+               #print (file.filename)
                
                # salvar o arquivo
-               filename = secure_filename(file.filename)
-               print ("filename",filename)
-               filepath = os.path.join(app2.config['UPLOAD_FOLDER'], filename)
-               print ("filepath",filepath)
+               #filename = secure_filename(file.filename)
+               #print ("filename",filename)
+               #filepath = os.path.join(app2.config['UPLOAD_FOLDER'], filename)
+               #print ("filepath",filepath)
                #file.save(filepath)
-               print (filename)
-               print (filepath)
+               #print (filename)
+               #print (filepath)
 
 
                image_data = file.read()
@@ -90,14 +80,14 @@ def add_course(form: CourseSchema):
                     title=form.title,
                     price=form.price,
                     content=form.content,
-                    imageURL=form.imageURL,
-                    filename=filename,
-                    filepath=filepath,
+                    #imageURL=form.imageURL,
+                    #filename=filename,
+                    #filepath=filepath,
                     image_data=image_data        
                )
     
                
-               print ("teste", course)
+               
                
                # conexão com a base
 
@@ -227,6 +217,54 @@ def find_course(query: FindCourseBySchema):
            logger.info(f"%d courses encontrados" % len(courses))
            # retorna a representação de course
            return apresenta_courses(courses), 200
+      
+
+@app.put('/course', tags=[course_tag],
+          responses={"200": CourseSchema, "409": ErrorSchema, "400": ErrorSchema})
+def update_course(query: FindCourseByIdSchema, form: CourseSchema):
+    """Atualiza o curso
+
+    Retorna uma representação dos cursos associadas.
+    """    
+
+    try:
+        course_id = query.id
+        logger.debug(f"Coletando dados sobre o curso#{course_id}")
+
+        if 'file' not in request.files:
+             flash ('no file part')
+             return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+             flash ('No selected file')
+             return redirect(request.url)
+        if file and allowed_file(file.filename):
+             image_data = file.read()
+
+        # criando conexão com a base
+        session = Session()
+
+        course = session.query(Course).filter(Course.id == course_id).first()
+        course.title = form.title
+        course.price = form.price
+        content = form.content
+        course.image_data = image_data
+
+        session.commit()
+        logger.debug(f"Adicionado o curso de nome: '{course.title}'")
+        return apresenta_course(course), 200
+
+    except IntegrityError as e:
+        # como a duplicidade do nome é a provável razão do IntegrityError
+        error_msg = "Category de mesmo nome já salvo na base :/"
+        logger.warning(f"Erro ao adicionar o curso '{course.title}', {error_msg}")
+        return {"mesage": error_msg}, 409
+
+    except Exception as e:
+        # caso um erro fora do previsto
+        error_msg = "Não foi possível salvar novo item :/"
+        logger.warning(f"Erro ao adicionar o curso '{course.title}', {error_msg}")
+        return {"mesage": error_msg}, 400
 
 ######################## Category ###############################
 
@@ -249,8 +287,7 @@ def add_category(form: CategorySchema):
              flash ('No selected file')
              return redirect(request.url)
         if file and allowed_file(file.filename):
-             image_category = file.read()    
-             print ("teste image",image_category)
+             image_category = file.read()
         category = Category(
         name=form.name,
         description=form.description,
@@ -278,30 +315,53 @@ def add_category(form: CategorySchema):
         return {"mesage": error_msg}, 400
     
 
-#@app.get('/category', tags=[category_tag],
-#         responses={"200": CategoryViewSchema, "404": ErrorSchema})
-#def get_category(query: FindCategoryByIdSchema):
-#     """Faz a busca por uma categoria a partir do id do categoria
-#        Retorna uma represetação das categorias.
-#     """
-#     category_id = query.id
-#     logger.info(f"Coletando dados sobre categoria #{category_id}")
-#     # criando conexão com a base
-#     session = Session()
-#     # fazendo a busca
-#     category = session.query(Category).filter(Category.id == category_id).first()
-     
+@app.put('/category', tags=[category_tag],
+          responses={"200": CategorySchema, "409": ErrorSchema, "400": ErrorSchema})
+def update_category(query: FindCategoryByIdSchema, form: CategorySchema):
+    """Atualiza a categoria
 
-#     if not category:
-#          # se a categoria não foi encontrado
-#          error_msg = "Categoria não encontrado na base :/"
-#          logger.warning(f"Erro ao buscar categoria: %s" % category)
-#          # retora a representação de categoria
-#          return {"mesage": error_msg}, 404
-#     else:
-#          logger.info("Category encontrado: %s" % category)
-#          # retorna a representação de course
-#          return apresenta_categoria(category), 200
+    Retorna uma representação das categorias associadas.
+    """    
+
+    try:
+        category_id = query.id
+        logger.debug(f"Coletando dados sobre a categoria#{category_id}")
+
+        if 'file' not in request.files:
+             flash ('no file part')
+             return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+             flash ('No selected file')
+             return redirect(request.url)
+        if file and allowed_file(file.filename):
+             image_category = file.read()
+
+        # criando conexão com a base
+        session = Session()
+
+        category = session.query(Category).filter(Category.id == category_id).first()
+        category.name = form.name 
+        category.description = form.description
+        category.image_category = image_category
+        
+        
+
+        session.commit()
+        logger.debug(f"Adicionado category de nome: '{category.name}'")
+        return apresenta_categoria(category), 200
+
+    except IntegrityError as e:
+        # como a duplicidade do nome é a provável razão do IntegrityError
+        error_msg = "Category de mesmo nome já salvo na base :/"
+        logger.warning(f"Erro ao adicionar cupom '{category.name}', {error_msg}")
+        return {"mesage": error_msg}, 409
+
+    except Exception as e:
+        # caso um erro fora do previsto
+        error_msg = "Não foi possível salvar novo item :/"
+        logger.warning(f"Erro ao adicionar category '{category.name}', {error_msg}")
+        return {"mesage": error_msg}, 400
      
 
 @app.get('/categories', tags=[category_tag],
@@ -323,7 +383,7 @@ def get_categories():
      else:
         logger.info(f"%d categorias econtrados" % len(categories))
         # retorna a representação de categoria
-        return apresenta_categoria(categories), 200
+        return apresenta_categorias(categories), 200
      
 
 @app.delete('/category', tags=[category_tag],
@@ -355,7 +415,7 @@ def del_category(query: FindCategoryByIdSchema):
 
 ##################### Cupom ######################################
 
-@app.get('/cupons', tags=[category_tag],
+@app.get('/cupons', tags=[cupom_tag],
          responses={"200": CupomListSchema, "404": ErrorSchema})
 def get_cupons():
      """Faz a busca por todos os cupons cadastrados

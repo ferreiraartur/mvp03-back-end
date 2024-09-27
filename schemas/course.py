@@ -10,9 +10,9 @@ class CourseSchema(BaseModel):
     title: str = "Docker Certified Associate"
     price: str = "29.99"
     content: str = "content"
-    imageURL: str = "/src/assets/courses/docker.png"
+    #imageURL: str = "/src/assets/courses/docker.png"
     #category: str = "DevOps"
-    image_data: str = "image"
+    #image_data: str = "image"
     file: Base64Bytes = "Image"
 
 
@@ -22,7 +22,7 @@ class CourseViewSchema(BaseModel):
     title: str = "Docker Certified Associate"
     price: str = "29.99"
     content: str = "content"
-    imageURL: str = "/src/assets/courses/docker.png"
+    #imageURL: str = "/src/assets/courses/docker.png"
     #category: str = "DevOps"
 
 
@@ -56,7 +56,7 @@ def apresenta_courses(courses: List[Course]):
             "title": course.title,
             "price": course.price,
             "content": course.content,
-            "imageURL": course.imageURL,
+            #"imageURL": course.imageURL,
             #"category": course.category,
             #"filename": course.filename,
             #"filepath": course.filepath,
@@ -90,7 +90,7 @@ def apresenta_course(course: Course):
         "title": course.title,
         "price": course.price,
         "content": course.content,
-        "imageURL": course.imageURL,
+        #"imageURL": course.imageURL,
         #"category": course.category
     }
 
