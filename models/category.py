@@ -36,9 +36,9 @@ class Category(Base):
             "id": self.id,
             "name": self.name,
             "description": self.description,
-            "image_category": self.image_category,
-            
+            "image_category": self.image_category  
         }
+     
     
     def __repr__(self):
         """

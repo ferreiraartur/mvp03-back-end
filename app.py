@@ -228,8 +228,9 @@ def find_course(query: FindCourseBySchema):
            # retorna a representação de course
            return apresenta_courses(courses), 200
 
+######################## Category ###############################
 
-@app.put('/category', tags=[category_tag],
+@app.post('/category', tags=[category_tag],
           responses={"200": CategorySchema, "409": ErrorSchema, "400": ErrorSchema})
 def add_category(form: CategorySchema):
     """Adiciona uma nova categoria à base de dados
@@ -323,10 +324,36 @@ def get_categories():
         logger.info(f"%d categorias econtrados" % len(categories))
         # retorna a representação de categoria
         return apresenta_categoria(categories), 200
+     
+
+@app.delete('/category', tags=[category_tag],
+            responses={"200": CategoryDelSchema, "404": ErrorSchema})
+def del_category(query: FindCategoryByIdSchema):
+     """Deleta uma categoria a partir do id informado
+     
+        Retorna uma mensagem de confirmação da remoção.
+     """
+     category_id = query.id
+     logger.info(f"Deletando dados sobre category #cupom_title")
+     # criando conexão com a base
+     session = Session()
+     # fazendo a remoção
+     count = session.query(Category).filter(Category.id == category_id).delete()
+     session.commit()
+
+     if count:
+          # retorna a representaçã da mensagem de confirmação
+          logger.info(f"Deletado category #{ category_id}")
+          return {"mesage": "Category removido", "id": category_id}
+     else:
+          # se o category não foi encontrado
+          error_msg = "Category não encontrado na base :/"
+          logger.warning(f"Erro ao deletar cupom #'{category_id}', {error_msg}")
+          return {"mesage": error_msg}, 404
 
 
 
-##################### Promotion ######################################
+##################### Cupom ######################################
 
 @app.get('/cupons', tags=[category_tag],
          responses={"200": CupomListSchema, "404": ErrorSchema})
@@ -371,7 +398,7 @@ def add_cupom(form: CupomSchema):
         # efetivando o camando de adição de novo item na tabela
         session.commit()
         logger.debug(f"Adicionado promotion de nome: '{cupom.name}'")
-        return apresenta_promotion(cupom), 200
+        return apresenta_cupom(cupom), 200
 
     except IntegrityError as e:
         # como a duplicidade do nome é a provável razão do IntegrityError
@@ -386,9 +413,9 @@ def add_cupom(form: CupomSchema):
         return {"mesage": error_msg}, 400
     
 
-@app.put('/promotion', tags=[cupom_tag],
+@app.put('/cupom', tags=[cupom_tag],
           responses={"200": CupomSchema, "409": ErrorSchema, "400": ErrorSchema})
-def update_promotion(query: FindCupomByIdSchema, form: CupomSchema):
+def update_cupom(query: FindCupomByIdSchema, form: CupomSchema):
     """Atualiza a cupom
 
     Retorna uma representação das cupons associadas.
@@ -404,10 +431,11 @@ def update_promotion(query: FindCupomByIdSchema, form: CupomSchema):
         cupom = session.query(Cupom).filter(Cupom.id == cupom_id).first()
         cupom.name = form.name 
         cupom.discount = form.discount
+        cupom.valid = form.valid
 
         session.commit()
-        logger.debug(f"Adicionado promotion de nome: '{cupom.name}'")
-        return apresenta_promotion(cupom), 200
+        logger.debug(f"Adicionado cupom de nome: '{cupom.name}'")
+        return apresenta_cupom(cupom), 200
 
     except IntegrityError as e:
         # como a duplicidade do nome é a provável razão do IntegrityError
@@ -442,7 +470,7 @@ def del_cupom(query: FindCupomByIdSchema):
           logger.info(f"Deletado cupom #{ cupom_id}")
           return {"mesage": "Cupom removido", "id": cupom_id}
      else:
-          # se o promotion não foi encontrado
+          # se o cupom não foi encontrado
           error_msg = "Cupom não encontrado na base :/"
           logger.warning(f"Erro ao deletar cupom #'{cupom_id}', {error_msg}")
           return {"mesage": error_msg}, 404
@@ -464,7 +492,7 @@ def get_cupom(query: FindCupomBySchema):
     cupom = session.query(Cupom).filter(Cupom.name == cupom_name).first()
 
     if not cupom:
-        # se a promotion não foi encontrado
+        # se a cupom não foi encontrado
         error_msg = "Cupom não encontrado na base :/"
         logger.warning(f"Erro ao buscar cupom '{cupom_name}', {error_msg}")
         return {"mesage": error_msg}, 404
