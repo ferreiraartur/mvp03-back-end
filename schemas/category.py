@@ -16,8 +16,8 @@ class CategorySchema(BaseModel):
 class CategoryViewSchema(BaseModel):
     """ Define como uma categoria será retornado: categoria
     """
-    id: int = 1
-    name: str = ""
+    name: str = "Docker Certified Associate"
+    description: str = "Automação, CI/CD, containers orquestração, infraestrutura como código e monitoramento."
 
 class CategoriesListSchema(BaseModel):
     """ Define como uma listagem de categorias será retornada.

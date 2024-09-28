@@ -66,11 +66,11 @@ def apresenta_courses(courses: List[Course]):
     return {"courses": result}
 
 
-class CourseViewSchema(BaseModel):
-    """ Define como um course será retornado: course
-    """
-    id: int = 1
-    title: str = ""
+#class CourseViewSchema(BaseModel):
+#    """ Define como um course será retornado: course
+#    """
+#    id: int = 1
+#    title: str = ""
 
 
 class CourseDelSchema(BaseModel):

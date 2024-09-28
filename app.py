@@ -220,8 +220,8 @@ def find_course(query: FindCourseBySchema):
       
 
 @app.put('/course', tags=[course_tag],
-          responses={"200": CourseSchema, "409": ErrorSchema, "400": ErrorSchema})
-def update_course(query: FindCourseByIdSchema, form: CourseSchema):
+          responses={"200": CourseViewSchema, "409": ErrorSchema, "400": ErrorSchema})
+def update_course(query: FindCourseByIdSchema, form: CourseViewSchema):
     """Atualiza o curso
 
     Retorna uma representação dos cursos associadas.
@@ -231,15 +231,15 @@ def update_course(query: FindCourseByIdSchema, form: CourseSchema):
         course_id = query.id
         logger.debug(f"Coletando dados sobre o curso#{course_id}")
 
-        if 'file' not in request.files:
-             flash ('no file part')
-             return redirect(request.url)
-        file = request.files['file']
-        if file.filename == '':
-             flash ('No selected file')
-             return redirect(request.url)
-        if file and allowed_file(file.filename):
-             image_data = file.read()
+       # if 'file' not in request.files:
+       #      flash ('no file part')
+       #      return redirect(request.url)
+       # file = request.files['file']
+       # if file.filename == '':
+       #      flash ('No selected file')
+       #      return redirect(request.url)
+       # if file and allowed_file(file.filename):
+       #      image_data = file.read()
 
         # criando conexão com a base
         session = Session()
@@ -247,8 +247,8 @@ def update_course(query: FindCourseByIdSchema, form: CourseSchema):
         course = session.query(Course).filter(Course.id == course_id).first()
         course.title = form.title
         course.price = form.price
-        content = form.content
-        course.image_data = image_data
+        course.content = form.content
+        #course.image_data = image_data
 
         session.commit()
         logger.debug(f"Adicionado o curso de nome: '{course.title}'")
@@ -316,8 +316,8 @@ def add_category(form: CategorySchema):
     
 
 @app.put('/category', tags=[category_tag],
-          responses={"200": CategorySchema, "409": ErrorSchema, "400": ErrorSchema})
-def update_category(query: FindCategoryByIdSchema, form: CategorySchema):
+          responses={"200": CategoryViewSchema, "409": ErrorSchema, "400": ErrorSchema})
+def update_category(query: FindCategoryByIdSchema, form: CategoryViewSchema):
     """Atualiza a categoria
 
     Retorna uma representação das categorias associadas.
@@ -327,15 +327,14 @@ def update_category(query: FindCategoryByIdSchema, form: CategorySchema):
         category_id = query.id
         logger.debug(f"Coletando dados sobre a categoria#{category_id}")
 
-        if 'file' not in request.files:
-             flash ('no file part')
-             return redirect(request.url)
-        file = request.files['file']
-        if file.filename == '':
-             flash ('No selected file')
-             return redirect(request.url)
-        if file and allowed_file(file.filename):
-             image_category = file.read()
+        #if 'file' not in request.files:
+        #    return redirect(request.url)
+        #file = request.files['file']
+        #if file.filename == '':
+        #     flash ('No selected file')
+        #     return redirect(request.url)
+        #if file and allowed_file(file.filename):
+        #     image_category = file.read()
 
         # criando conexão com a base
         session = Session()
@@ -343,7 +342,7 @@ def update_category(query: FindCategoryByIdSchema, form: CategorySchema):
         category = session.query(Category).filter(Category.id == category_id).first()
         category.name = form.name 
         category.description = form.description
-        category.image_category = image_category
+        #category.image_category = image_category
         
         
 
