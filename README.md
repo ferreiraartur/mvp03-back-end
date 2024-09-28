@@ -98,5 +98,12 @@ Subistituindo o `CONTAINER ID` pelo ID do conatiner
  Caso queira **destruir um conatiner**, basta executar o comando:
 ```
 $ docker rm <CONTAINER ID>
+
 ```
+**Ajuda**
+Caso não tenha permissão para utilizar os comandos docker, pode ser necessário utilizar o sudo na frente de cada comando. Exemplo abaixo:
+```
+sudo docker "comando"
+```
+
 Para mais comandos, veja a [documentação do docker](https://docs.docker.com/engine/reference/run/).
