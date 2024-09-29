@@ -80,17 +80,11 @@ def add_course(form: CourseSchema):
                     title=form.title,
                     price=form.price,
                     content=form.content,
-                    #imageURL=form.imageURL,
-                    #filename=filename,
-                    #filepath=filepath,
-                    image_data=image_data        
+                    image_data=image_data
+                           
                )
-    
-               
-               
-               
+                         
                # conexão com a base
-
                session = Session()
                # adicionar curso
                session.add(course)
@@ -186,7 +180,7 @@ def del_course(query: FindCourseByIdSchema):
      session.commit()
 
      if count:
-          # retorna a representaçã da mensagem de confirmação
+          # retorna a representação da mensagem de confirmação
           logger.info(f"Deletado course #{course_id}")
           return {"mesage": "Course removido", "id": course_id}
      else:
@@ -231,16 +225,6 @@ def update_course(query: FindCourseByIdSchema, form: CourseViewSchema):
         course_id = query.id
         logger.debug(f"Coletando dados sobre o curso#{course_id}")
 
-       # if 'file' not in request.files:
-       #      flash ('no file part')
-       #      return redirect(request.url)
-       # file = request.files['file']
-       # if file.filename == '':
-       #      flash ('No selected file')
-       #      return redirect(request.url)
-       # if file and allowed_file(file.filename):
-       #      image_data = file.read()
-
         # criando conexão com a base
         session = Session()
 
@@ -248,6 +232,7 @@ def update_course(query: FindCourseByIdSchema, form: CourseViewSchema):
         course.title = form.title
         course.price = form.price
         course.content = form.content
+        #course.category_id = form.category_id
         #course.image_data = image_data
 
         session.commit()
@@ -327,25 +312,13 @@ def update_category(query: FindCategoryByIdSchema, form: CategoryViewSchema):
         category_id = query.id
         logger.debug(f"Coletando dados sobre a categoria#{category_id}")
 
-        #if 'file' not in request.files:
-        #    return redirect(request.url)
-        #file = request.files['file']
-        #if file.filename == '':
-        #     flash ('No selected file')
-        #     return redirect(request.url)
-        #if file and allowed_file(file.filename):
-        #     image_category = file.read()
-
         # criando conexão com a base
         session = Session()
 
         category = session.query(Category).filter(Category.id == category_id).first()
         category.name = form.name 
         category.description = form.description
-        #category.image_category = image_category
         
-        
-
         session.commit()
         logger.debug(f"Adicionado category de nome: '{category.name}'")
         return apresenta_categoria(category), 200

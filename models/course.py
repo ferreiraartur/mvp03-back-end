@@ -13,10 +13,17 @@ class Course(Base):
     title = Column(String(200))
     price = Column(Float)
     content = Column(String(200))
+    image_data = Column(LargeBinary, nullable=False)
     #imageURL = Column(String(200))
     #filename = Column(String(120), nullable=False)
     #filepath = Column(String(120), nullable=False)
-    image_data = Column(LargeBinary, nullable=False)
+    
+
+    # Foreign key to the Category model
+    #category_id = Column(Integer, ForeignKey('category_catalog.pk_category'), nullable=False)
+
+    # Relationship to Category
+    #category = relationship("Category", back_populates="courses")
     
 
     data_insercao = Column(DateTime, default=datetime.now())
@@ -30,7 +37,6 @@ class Course(Base):
                 title: título.
                 price: preço
                 content: content
-                category: category
                 filename: filename
                 data_insercao: data_insercao
         
@@ -41,6 +47,7 @@ class Course(Base):
         #self.filename = filename
         #self.filepath = filepath
         self.image_data = image_data
+        #self.category_id = category_id
         data_insercao = data_insercao
 
         if data_insercao:
@@ -59,6 +66,7 @@ class Course(Base):
             #"filename": self.filename,
             #"filepath": self.filepath,
             "image_data": self.image_data,
+            #"category_id": self.category_id,
             "data_insercao": self.data_insercao
         }
     

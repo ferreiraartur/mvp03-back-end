@@ -10,10 +10,11 @@ class CourseSchema(BaseModel):
     title: str = "Docker Certified Associate"
     price: str = "29.99"
     content: str = "content"
+    file: Base64Bytes = "Image"
     #imageURL: str = "/src/assets/courses/docker.png"
     #category: str = "DevOps"
     #image_data: str = "image"
-    file: Base64Bytes = "Image"
+    #category_id: int
 
 
 class CourseViewSchema(BaseModel):
@@ -22,6 +23,7 @@ class CourseViewSchema(BaseModel):
     title: str = "Docker Certified Associate"
     price: str = "29.99"
     content: str = "content"
+    #category_id: int
     #imageURL: str = "/src/assets/courses/docker.png"
     #category: str = "DevOps"
 
